@@ -81,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         textSize = Math.round(textView.getTextSize() / getResources().getDisplayMetrics().scaledDensity);
         switch (item.getItemId()) {
+            case R.id.btnOpenFile:
+                return true;
             case R.id.btnZoomIn:
                 if (textSize < 20) {
                     int newSize = textSize + 1;
