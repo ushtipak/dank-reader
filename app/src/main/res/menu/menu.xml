@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/btnZoomIn"
+        android:icon="@drawable/ic_zoom_in"
+        android:title="@string/zoom_in"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/btnZoomOut"
+        android:icon="@drawable/ic_zoom_out"
+        android:title="@string/zoom_out"
+        app:showAsAction="ifRoom" />
+
+</menu>
