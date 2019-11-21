@@ -2,6 +2,9 @@ package com.pijupiju.dankreader;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -16,6 +19,7 @@ import java.io.InputStreamReader;
 public class MainActivity extends AppCompatActivity {
     ScrollView scrollView;
     TextView textView;
+    int textSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +62,45 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         final int offset = getSharedPreferences(String.format("%s_preferences", getPackageName()), MODE_PRIVATE)
                 .getInt("offset", 0);
+        final int size = getSharedPreferences(String.format("%s_preferences", getPackageName()), MODE_PRIVATE)
+                .getInt("size", 18);
 
         final Handler handler = new Handler();
-        handler.postDelayed(() -> scrollView.scrollTo(0, offset), 1337);
-
+        handler.postDelayed(() -> {
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
+            scrollView.scrollTo(0, offset);
+        }, 1337);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        textSize = Math.round(textView.getTextSize() / getResources().getDisplayMetrics().scaledDensity);
+        switch (item.getItemId()) {
+            case R.id.btnZoomIn:
+                if (textSize < 20) {
+                    int newSize = textSize + 1;
+                    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, newSize);
+                    getSharedPreferences(String.format("%s_preferences", getPackageName()), MODE_PRIVATE)
+                            .edit().putInt("size", newSize).apply();
+                }
+                return true;
+            case R.id.btnZoomOut:
+                if (textSize > 14) {
+                    int newSize = textSize - 1;
+                    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, newSize);
+                    getSharedPreferences(String.format("%s_preferences", getPackageName()), MODE_PRIVATE)
+                            .edit().putInt("size", newSize).apply();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 }

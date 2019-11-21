@@ -1,9 +1,9 @@
 <resources>
 
     <style name="AppTheme" parent="@style/Theme.MaterialComponents.DayNight">
-        <item name="colorPrimary">#007AC4</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
         <item name="android:textColor">?attr/colorOnBackground</item>
-        <item name="android:navigationBarColor">#121212</item>
+        <item name="android:navigationBarColor">@color/colorNavigationBar</item>
     </style>
 
 </resources>
