@@ -1,6 +1,9 @@
 package com.pijupiju.dankreader;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.ViewTreeObserver;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +15,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class MainActivity extends AppCompatActivity {
+    ScrollView scrollView;
+    TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        scrollView = findViewById(R.id.scrollView);
         String s = "";
         StringBuilder stringBuilder = new StringBuilder();
         InputStream inputStream = this.getResources().openRawResource(R.raw.input);
@@ -40,7 +46,32 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        TextView textView = findViewById(R.id.textView);
+        textView = findViewById(R.id.textView);
         textView.setText(stringBuilder);
+
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                getSharedPreferences(String.format("%s_preferences", getPackageName()), MODE_PRIVATE)
+                        .edit().putInt("offset", scrollView.getScrollY()).apply();
+            }
+        });
+
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        final int offset = getSharedPreferences(String.format("%s_preferences", getPackageName()), MODE_PRIVATE)
+                .getInt("offset", 0);
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.scrollTo(0, offset);
+            }
+        }, 1337);
+
     }
 }
