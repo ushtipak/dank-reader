@@ -2,7 +2,6 @@ package com.pijupiju.dankreader;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.ViewTreeObserver;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -49,13 +48,8 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.textView);
         textView.setText(stringBuilder);
 
-        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-            @Override
-            public void onScrollChanged() {
-                getSharedPreferences(String.format("%s_preferences", getPackageName()), MODE_PRIVATE)
-                        .edit().putInt("offset", scrollView.getScrollY()).apply();
-            }
-        });
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(() -> getSharedPreferences(String.format("%s_preferences", getPackageName()), MODE_PRIVATE)
+                .edit().putInt("offset", scrollView.getScrollY()).apply());
 
     }
 
@@ -66,12 +60,7 @@ public class MainActivity extends AppCompatActivity {
                 .getInt("offset", 0);
 
         final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                scrollView.scrollTo(0, offset);
-            }
-        }, 1337);
+        handler.postDelayed(() -> scrollView.scrollTo(0, offset), 1337);
 
     }
 }
