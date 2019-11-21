@@ -60,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPostResume() {
-        super.onPostResume();
+    protected void onResume() {
+        super.onResume();
         final int offset = getSharedPreferences(String.format("%s_preferences", getPackageName()), MODE_PRIVATE)
                 .getInt("offset", 0);
 
