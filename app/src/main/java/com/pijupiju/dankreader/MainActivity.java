@@ -1,5 +1,6 @@
 package com.pijupiju.dankreader;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.TypedValue;
@@ -60,11 +61,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        final int offset = getSharedPreferences(String.format("%s_preferences", getPackageName()), MODE_PRIVATE)
-                .getInt("offset", 0);
-        final int size = getSharedPreferences(String.format("%s_preferences", getPackageName()), MODE_PRIVATE)
-                .getInt("size", 18);
-
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(String.format("%s_preferences", getPackageName()), MODE_PRIVATE);
+        final int offset = sharedPreferences.getInt("offset", 0);
+        final int size = sharedPreferences.getInt("size", 18);
         final Handler handler = new Handler();
         handler.postDelayed(() -> {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
