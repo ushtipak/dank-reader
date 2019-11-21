@@ -1,6 +1,8 @@
 package com.pijupiju.dankreader;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.TypedValue;
@@ -12,10 +14,13 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.aditya.filebrowser.Constants;
+import com.aditya.filebrowser.FileChooser;
+
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 public class MainActivity extends AppCompatActivity {
     ScrollView scrollView;
@@ -31,31 +36,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        scrollView = findViewById(R.id.scrollView);
-        String s = "";
-        StringBuilder stringBuilder = new StringBuilder();
-        InputStream inputStream = this.getResources().openRawResource(R.raw.input);
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-        while (true) {
-            try {
-                if ((s = bufferedReader.readLine()) == null) break;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            stringBuilder.append(s).append("\n");
-        }
-        try {
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         textView = findViewById(R.id.textView);
-        textView.setText(stringBuilder);
-
+        scrollView = findViewById(R.id.scrollView);
         scrollView.getViewTreeObserver().addOnScrollChangedListener(() -> getSharedPreferences(String.format("%s_preferences", getPackageName()), MODE_PRIVATE)
                 .edit().putInt("offset", scrollView.getScrollY()).apply());
-
     }
 
     @Override
@@ -82,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         textSize = Math.round(textView.getTextSize() / getResources().getDisplayMetrics().scaledDensity);
         switch (item.getItemId()) {
             case R.id.btnOpenFile:
+                openFile();
                 return true;
             case R.id.btnZoomIn:
                 if (textSize < 20) {
@@ -102,6 +87,44 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void openFile() {
+        Intent intent = new Intent(getApplicationContext(), FileChooser.class);
+        intent.putExtra(Constants.SELECTION_MODE, Constants.SELECTION_MODES.SINGLE_SELECTION.ordinal());
+        startActivityForResult(intent, 1);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && data != null) {
+            if (resultCode == RESULT_OK) {
+                Uri uri = data.getData();
+                if (uri != null) {
+                    if (uri.getPath() != null) {
+                        File file = new File(uri.getPath());
+                        loadFile(file);
+                    }
+                }
+            }
+        }
+    }
+
+    private void loadFile(File file) {
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line);
+                stringBuilder.append('\n');
+            }
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        textView.setText(stringBuilder);
     }
 
 }
