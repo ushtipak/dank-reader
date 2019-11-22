@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         scrollView = findViewById(R.id.scrollView);
         scrollView.getViewTreeObserver().addOnScrollChangedListener(() -> getSharedPreferences(String.format("%s_preferences", getPackageName()), MODE_PRIVATE)
                 .edit().putInt("offset", scrollView.getScrollY()).apply());
+
     }
 
     @Override
@@ -48,11 +49,15 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(String.format("%s_preferences", getPackageName()), MODE_PRIVATE);
         final int offset = sharedPreferences.getInt("offset", 0);
         final int size = sharedPreferences.getInt("size", 18);
+        final String file = sharedPreferences.getString("file", "");
         final Handler handler = new Handler();
-        handler.postDelayed(() -> {
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
-            scrollView.scrollTo(0, offset);
-        }, 1337);
+        if (!file.equals("")) {
+            loadFile(new File(file));
+            handler.postDelayed(() -> {
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
+                scrollView.scrollTo(0, offset);
+            }, 1337);
+        }
     }
 
     @Override
@@ -105,6 +110,9 @@ public class MainActivity extends AppCompatActivity {
                     if (uri.getPath() != null) {
                         File file = new File(uri.getPath());
                         loadFile(file);
+                        getSharedPreferences(
+                                String.format("%s_preferences", getPackageName()), MODE_PRIVATE)
+                                .edit().putString("file", uri.getPath()).apply();
                     }
                 }
             }
